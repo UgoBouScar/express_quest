@@ -1,61 +1,28 @@
+require("dotenv").config();
+const port = process.env.APP_PORT ?? 5001;
+
 const express = require("express");
 
 const app = express();
 
-const port = 5000;
+app.use(express.json());
 
-const movies = [
-  {
-    id: 1,
-    title: "Citizen Kane",
-    director: "Orson Wells",
-    year: "1941",
-    colors: false,
-    duration: 120,
-  },
-  {
-    id: 2,
-    title: "The Godfather",
-    director: "Francis Ford Coppola",
-    year: "1972",
-    colors: true,
-    duration: 180,
-  },
-  {
-    id: 3,
-    title: "Pulp Fiction",
-    director: "Quentin Tarantino",
-    year: "1994",
-    color: true,
-    duration: 180,
-  },
-  {
-    id: 4,
-    title: "The Dark Knight",
-    director: "Christopher Nolan",
-    year: "2008",
-    color: true,
-    duration: 152,
-  },
-];
+// const port = 5000;
 
-app.get("/", (req, res) => {
-  res.send("Welcome to my favourite movie list");
-});
+const welcome = (req, res) => {
+  res.send("Welcome to my favorite movie list");
+};
 
-app.get("/api/movies", (req, res) => {
-  res.status(200).json(movies);
-});
+app.get("/", welcome);
 
-app.get("/api/movies/:id", (req, res) => {
-  const id = req.params.id;
-  const movie = movies.find((movie) => movie.id == id);
-  if (movie) {
-    res.status(200).json(movie);
-  } else {
-    res.status(404).send("Not Found");
-  }
-});
+const movieHandlers = require("./movieHandlers");
+
+app.get("/api/movies", movieHandlers.getMovies);
+app.get("/api/movies/:id", movieHandlers.getMovieById);
+
+const users = require("./users");
+app.get("/api/users", users.getUsers);
+app.get("/api/users/:id", users.getUsersById);
 
 app.listen(port, (err) => {
   if (err) {
